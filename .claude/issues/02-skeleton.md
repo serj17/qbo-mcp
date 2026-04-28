@@ -10,14 +10,14 @@ The package should already be configured to publish as `qbo-mcp` to npm and be i
 
 ## Acceptance criteria
 
-- [ ] `package.json` declares `"name": "qbo-mcp"`, `"type": "module"`, `"bin": { "qbo-mcp": "./dist/index.js" }`, Node `>=20` engines field
-- [ ] TypeScript build configured (e.g. `tsup` or `tsc`); `npm run build` produces `dist/index.js` with a shebang line
-- [ ] `vitest` configured; `npm test` runs an empty/sample test green
-- [ ] `npm run start` and `node dist/index.js` boot the MCP server on stdio
-- [ ] A single `ping` MCP tool is registered; calling it returns `"pong"`
-- [ ] Claude Code can be configured with `npx -y .` (or absolute path to `dist/index.js`) and call the `ping` tool successfully
-- [ ] `.gitignore` covers `node_modules`, `dist`, `.env`, OS junk
-- [ ] MIT `LICENSE` file in repo root
+- [x] `package.json` declares `"name": "qbo-mcp"`, `"type": "module"`, `"bin": { "qbo-mcp": "./dist/index.js" }`, Node `>=20` engines field
+- [x] TypeScript build configured (e.g. `tsup` or `tsc`); `npm run build` produces `dist/index.js` with a shebang line
+- [x] `vitest` configured; `npm test` runs an empty/sample test green
+- [x] `npm run start` and `node dist/index.js` boot the MCP server on stdio
+- [x] A single `ping` MCP tool is registered; calling it returns `"pong"`
+- [x] Claude Code can be configured with `npx -y .` (or absolute path to `dist/index.js`) and call the `ping` tool successfully
+- [x] `.gitignore` covers `node_modules`, `dist`, `.env`, OS junk
+- [x] MIT `LICENSE` file in repo root
 
 ## Blocked by
 

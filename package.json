@@ -1,17 +1,34 @@
 {
-  "name": "qbo-mcp-workspace",
-  "private": true,
-  "version": "0.0.0",
+  "name": "qbo-mcp",
+  "version": "0.1.0",
   "type": "module",
-  "description": "Workspace root for building qbo-mcp via sandcastle. The qbo-mcp package itself is bootstrapped by the AFK agent per .claude/issues/02-skeleton.md.",
+  "description": "Read-only MCP server for QuickBooks Online",
+  "bin": {
+    "qbo-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
+    "build": "tsup",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "sandcastle:build-image": "sandcastle docker build-image --image-name qbo-mcp-sandcastle:local --dockerfile .sandcastle/Dockerfile",
     "sandcastle:login": "tsx .sandcastle/login.mts",
     "sandcastle": "tsx .sandcastle/main.mts"
   },
+  "license": "MIT",
   "devDependencies": {
-    "@ai-hero/sandcastle": "file:./sandcastle",
-    "@daytona/sdk": "^0.164.0",
-    "tsx": "^4.21.0"
+    "tsup": "^8.4.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.1.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0"
   }
 }
