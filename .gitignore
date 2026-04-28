@@ -1,0 +1,14 @@
+node_modules/
+dist/
+*.log
+.env
+.DS_Store
+Thumbs.db
+
+# Local sandcastle clone — tracked separately
+sandcastle/
+
+# Sandcastle runtime artifacts
+.sandcastle/.env
+.sandcastle/logs/
+.sandcastle/worktrees/
