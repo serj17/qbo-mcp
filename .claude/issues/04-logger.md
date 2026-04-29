@@ -10,15 +10,15 @@ Also registers the `get_recent_logs` MCP tool with the running server (added to 
 
 ## Acceptance criteria
 
-- [ ] `pino` writes to `<config-dir>/logs/qbo-mcp.log` (auto-created if missing) and to stderr
-- [ ] Log path is printed to stderr on server startup
-- [ ] Log files rotate at 5 MB, keep 5 generations
-- [ ] Logs flush synchronously enough that `pino.flush()` after each write keeps the file consistent across crashes
-- [ ] Redaction config strips fields named `access_token`, `refresh_token`, `client_secret`, `Authorization`, `code`, plus their nested variants
-- [ ] `LOG_LEVEL` env var controls verbosity (default `info`, accepts `debug`, `warn`, `error`)
-- [ ] `readRecentLogs({lines, level?, tool?})` reads the tail of the file, parses JSON, applies filters, returns array of entries
-- [ ] `get_recent_logs` MCP tool exposes `readRecentLogs` with a Zod schema (`lines: number, level?: string, tool?: string`)
-- [ ] Unit tests cover `readRecentLogs` filter logic over fixture log files (lines limit, level filter, tool filter, malformed line handling)
+- [x] `pino` writes to `<config-dir>/logs/qbo-mcp.log` (auto-created if missing) and to stderr
+- [x] Log path is printed to stderr on server startup
+- [x] Log files rotate at 5 MB, keep 5 generations
+- [x] Logs flush synchronously enough that `pino.flush()` after each write keeps the file consistent across crashes
+- [x] Redaction config strips fields named `access_token`, `refresh_token`, `client_secret`, `Authorization`, `code`, plus their nested variants
+- [x] `LOG_LEVEL` env var controls verbosity (default `info`, accepts `debug`, `warn`, `error`)
+- [x] `readRecentLogs({lines, level?, tool?})` reads the tail of the file, parses JSON, applies filters, returns array of entries
+- [x] `get_recent_logs` MCP tool exposes `readRecentLogs` with a Zod schema (`lines: number, level?: string, tool?: string`)
+- [x] Unit tests cover `readRecentLogs` filter logic over fixture log files (lines limit, level filter, tool filter, malformed line handling)
 
 ## Blocked by
 
