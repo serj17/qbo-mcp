@@ -10,12 +10,12 @@ Public interface: `getConfig()`, `saveTokens(tokens)`, `clearConfig()`. App cred
 
 ## Acceptance criteria
 
-- [ ] `env-paths` resolves config dir to `%APPDATA%\qbo-mcp\` on Windows, `~/Library/Application Support/qbo-mcp/` on macOS, `~/.config/qbo-mcp/` on Linux
-- [ ] `saveTokens` writes to a temp file in the same dir then renames; never leaves a partial `tokens.json`
-- [ ] `getConfig` returns env-var app creds when set, falling back to file values
-- [ ] Corrupted JSON triggers a backup-and-rename to `tokens.json.bak.<unix-timestamp>` and throws a typed error
-- [ ] `clearConfig` removes the tokens file (best-effort; never throws on ENOENT)
-- [ ] Unit tests cover: atomicity (simulated crash mid-write), corruption recovery, env-var precedence, missing file handling, missing app creds error shape
+- [x] `env-paths` resolves config dir to `%APPDATA%\qbo-mcp\` on Windows, `~/Library/Application Support/qbo-mcp/` on macOS, `~/.config/qbo-mcp/` on Linux
+- [x] `saveTokens` writes to a temp file in the same dir then renames; never leaves a partial `tokens.json`
+- [x] `getConfig` returns env-var app creds when set, falling back to file values
+- [x] Corrupted JSON triggers a backup-and-rename to `tokens.json.bak.<unix-timestamp>` and throws a typed error
+- [x] `clearConfig` removes the tokens file (best-effort; never throws on ENOENT)
+- [x] Unit tests cover: atomicity (simulated crash mid-write), corruption recovery, env-var precedence, missing file handling, missing app creds error shape
 
 ## Blocked by
 
