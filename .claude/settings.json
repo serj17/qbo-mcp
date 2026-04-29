@@ -1,9 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm install *)",
-      "Bash(npm run *)",
-      "Bash(npx vitest *)"
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(npm test *)",
+      "Bash(npm --version)",
+      "Bash(npx vitest *)",
+      "Bash(npm install *)"
     ],
     "additionalDirectories": [
       "\\tmp"
