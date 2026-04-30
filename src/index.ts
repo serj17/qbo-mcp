@@ -102,9 +102,22 @@ async function runMcpServer(): Promise<void> {
   await server.connect(transport);
 }
 
+const TOP_LEVEL_HELP =
+  "Usage: qbo-mcp [command] [options]\n\n" +
+  "Commands:\n" +
+  "  (no command)  Run the MCP server on stdio (default; what Claude Code launches)\n" +
+  "  auth          Authorize against QuickBooks Online (run before first server use)\n" +
+  "\n" +
+  "Run `qbo-mcp auth --help` for auth-specific options.\n";
+
 async function main(): Promise<void> {
   const argv = process.argv.slice(2);
   const cmd = argv[0];
+
+  if (cmd === undefined) {
+    await runMcpServer();
+    return;
+  }
 
   if (cmd === "auth") {
     await runAuthCommand(argv.slice(1));
@@ -112,18 +125,14 @@ async function main(): Promise<void> {
   }
 
   if (cmd === "--help" || cmd === "-h") {
-    process.stderr.write(
-      "Usage: qbo-mcp [command] [options]\n\n" +
-        "Commands:\n" +
-        "  (no command)  Run the MCP server on stdio (default; what Claude Code launches)\n" +
-        "  auth          Authorize against QuickBooks Online (run before first server use)\n" +
-        "\n" +
-        "Run `qbo-mcp auth --help` for auth-specific options.\n",
-    );
+    process.stderr.write(TOP_LEVEL_HELP);
     process.exit(0);
   }
 
-  await runMcpServer();
+  process.stderr.write(
+    `qbo-mcp: unknown command or flag: ${cmd}\n\n${TOP_LEVEL_HELP}`,
+  );
+  process.exit(1);
 }
 
 void main();
