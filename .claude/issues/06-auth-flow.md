@@ -20,15 +20,15 @@ Stores `realm_id`, `environment`, tokens, and timestamps in `config-store`.
 
 ## Acceptance criteria
 
-- [ ] `npx -y . auth --env sandbox` opens the system browser to the correct Intuit auth URL
-- [ ] After consenting in Intuit's UI, the local server captures the code, exchanges it, and writes tokens via `config-store`
-- [ ] `--manual` prints the auth URL, accepts a pasted callback URL on stdin, extracts the code, completes the exchange
-- [ ] OAuth `state` param is generated, validated on callback, mismatches reject the request
-- [ ] `--port` flag works for users with port 8080 already in use
-- [ ] Errors during exchange (e.g., expired code, bad client_secret) print actionable messages to stderr, exit code 1
-- [ ] After success, the CLI prints the realm_id and environment, exits cleanly
-- [ ] Re-running `auth` overwrites prior tokens (no orphaned files)
-- [ ] No unit tests required (network + browser; covered by manual run before merging)
+- [x] `npx -y . auth --env sandbox` opens the system browser to the correct Intuit auth URL
+- [x] After consenting in Intuit's UI, the local server captures the code, exchanges it, and writes tokens via `config-store`
+- [x] `--manual` prints the auth URL, accepts a pasted callback URL on stdin, extracts the code, completes the exchange
+- [x] OAuth `state` param is generated, validated on callback, mismatches reject the request
+- [x] `--port` flag works for users with port 8080 already in use
+- [x] Errors during exchange (e.g., expired code, bad client_secret) print actionable messages to stderr, exit code 1
+- [x] After success, the CLI prints the realm_id and environment, exits cleanly
+- [x] Re-running `auth` overwrites prior tokens (no orphaned files)
+- [x] No unit tests required (network + browser; covered by manual run before merging)
 
 ## Blocked by
 
