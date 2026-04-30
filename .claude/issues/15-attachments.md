@@ -14,13 +14,13 @@ The full attachment reading path: the `attachment-cache` deep module, `list_atta
 
 ## Acceptance criteria
 
-- [ ] `attachment-cache.getOrDownload(id)` resolves QBO signed URL, downloads via streaming, returns local path
-- [ ] LRU eviction triggers when total cache size exceeds `ATTACHMENT_CACHE_MAX_BYTES` env var (default 500 MB); evicts oldest by mtime until under cap
-- [ ] Cache directory auto-created on first use
-- [ ] `list_attachments` returns the metadata array (not the QBO Attachable wrapper); empty array if none
-- [ ] `list_attachments` errors gracefully on bad `entity_type` (typed as enum in the Zod schema)
-- [ ] `get_attachment` returns the local path; second call for the same id is a cache hit (no network)
-- [ ] One sandbox integration test: upload a PDF to a sandbox bill out-of-band, then `list_attachments` and `get_attachment` against it; or rely on a known-attachment fixture in the sandbox
+- [x] `attachment-cache.getOrDownload(id)` resolves QBO signed URL, downloads via streaming, returns local path
+- [x] LRU eviction triggers when total cache size exceeds `ATTACHMENT_CACHE_MAX_BYTES` env var (default 500 MB); evicts oldest by mtime until under cap
+- [x] Cache directory auto-created on first use
+- [x] `list_attachments` returns the metadata array (not the QBO Attachable wrapper); empty array if none
+- [x] `list_attachments` errors gracefully on bad `entity_type` (typed as enum in the Zod schema)
+- [x] `get_attachment` returns the local path; second call for the same id is a cache hit (no network)
+- [x] One sandbox integration test: upload a PDF to a sandbox bill out-of-band, then `list_attachments` and `get_attachment` against it; or rely on a known-attachment fixture in the sandbox
 
 ## Blocked by
 

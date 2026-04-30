@@ -10,6 +10,9 @@ import { getLogger, getLoggerPaths, readRecentLogs } from "./logger/index.js";
 import { QboClient } from "./qbo-client/index.js";
 import { SyncFolderDetectedError, getSafeBaseDir } from "./safe-paths/index.js";
 import { defineTool } from "./tool-registry/index.js";
+import { AttachmentCache } from "./attachment-cache/index.js";
+import { createGetAttachmentTool } from "./tools/get_attachment.js";
+import { listAttachmentsTool } from "./tools/list_attachments.js";
 import { getBalanceSheetTool } from "./tools/get_balance_sheet.js";
 import { getBillTool } from "./tools/get_bill.js";
 import { getCompanyInfoTool } from "./tools/get_company_info.js";
@@ -205,6 +208,13 @@ async function runMcpServer(): Promise<void> {
   defineTool(server, { qbo, logger }, getCustomerTool);
   defineTool(server, { qbo, logger }, getVendorTool);
   defineTool(server, { qbo, logger }, getBillTool);
+
+  // Attachment tools share a single AttachmentCache instance per server lifetime
+  // so cache hits work across calls.
+  const attachmentCache = new AttachmentCache();
+  defineTool(server, { qbo, logger }, listAttachmentsTool);
+  defineTool(server, { qbo, logger }, createGetAttachmentTool(attachmentCache));
+
   logger.info(
     { realm_id: config.tokens.realm_id, environment: config.tokens.environment, event: "qbo_tools_registered" },
     "qbo tools registered",
