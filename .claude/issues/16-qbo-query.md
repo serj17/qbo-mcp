@@ -12,11 +12,11 @@ Bad syntax returns `INVALID_QUERY` with the QBO fault message verbatim so Claude
 
 ## Acceptance criteria
 
-- [ ] Tool registered via `tool-registry.defineTool({ ... })` (not list mode — pagination is the caller's responsibility on raw queries)
-- [ ] Returns the raw QBO response under a top-level key (e.g., `{ QueryResponse: ... }`) so Claude sees the same shape Intuit's docs describe
-- [ ] Bad QBQL produces a structured `INVALID_QUERY` error with QBO's message text intact
-- [ ] One sandbox integration test for happy path: `SELECT * FROM Customer MAXRESULTS 5` returns 5 customers
-- [ ] One sandbox integration test for error path: malformed query returns `INVALID_QUERY` with the right `_meta.code`
+- [x] Tool registered via `tool-registry.defineTool({ ... })` (not list mode — pagination is the caller's responsibility on raw queries)
+- [x] Returns the raw QBO response under a top-level key (e.g., `{ QueryResponse: ... }`) so Claude sees the same shape Intuit's docs describe
+- [x] Bad QBQL produces a structured `INVALID_QUERY` error with QBO's message text intact
+- [x] One sandbox integration test for happy path: `SELECT * FROM Customer MAXRESULTS 5` returns 5 customers
+- [x] One sandbox integration test for error path: malformed query returns `INVALID_QUERY` with the right `_meta.code`
 
 ## Blocked by
 

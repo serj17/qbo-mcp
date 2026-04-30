@@ -29,6 +29,7 @@ import { listCustomersTool } from "./tools/list_customers.js";
 import { listInvoicesTool } from "./tools/list_invoices.js";
 import { listTransactionsTool } from "./tools/list_transactions.js";
 import { listVendorsTool } from "./tools/list_vendors.js";
+import { qboQueryTool } from "./tools/qbo_query.js";
 
 async function runAuthCommand(args: string[]): Promise<void> {
   let parsed;
@@ -214,6 +215,9 @@ async function runMcpServer(): Promise<void> {
   const attachmentCache = new AttachmentCache();
   defineTool(server, { qbo, logger }, listAttachmentsTool);
   defineTool(server, { qbo, logger }, createGetAttachmentTool(attachmentCache));
+
+  // Escape hatch — last resort for queries the curated tools don't cover.
+  defineTool(server, { qbo, logger }, qboQueryTool);
 
   logger.info(
     { realm_id: config.tokens.realm_id, environment: config.tokens.environment, event: "qbo_tools_registered" },
