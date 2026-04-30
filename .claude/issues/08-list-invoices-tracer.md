@@ -14,15 +14,15 @@ The first end-to-end vertical slice through every layer: `pagination` module + `
 
 ## Acceptance criteria
 
-- [ ] `pagination.paginate({ queryFn, params })` handles cursor encode/decode, `count_only`, and `fetch_all` with a 5000 hard cap
-- [ ] Cursor format is opaque to callers (Claude treats it as a string); internally it's the QBO `STARTPOSITION`
-- [ ] `count_only: true` skips the data query, returns just `{ total_count: N }`
-- [ ] When `cursor` is set, the count query is skipped (we're already paginating)
-- [ ] `tool-registry.defineTool({ name, schema, handler, isList? })` registers a tool with automatic try/catch → `QboError` → MCP error shape, logs entry/exit, applies pagination if `isList`
-- [ ] Error tool results carry `isError: true`, a `text` content block with remediation, and `_meta.code`
-- [ ] `list_invoices` accepts the documented filters via Zod schema and returns the standard `{ items, page_info }` shape
-- [ ] One sandbox integration test: with the QBO sandbox company connected, `list_invoices({ limit: 5 })` returns 5 items + correct `page_info`
-- [ ] Unit tests on `pagination`: cursor encode/decode, fetch_all hard cap, count_only short-circuit
+- [x] `pagination.paginate({ queryFn, params })` handles cursor encode/decode, `count_only`, and `fetch_all` with a 5000 hard cap
+- [x] Cursor format is opaque to callers (Claude treats it as a string); internally it's the QBO `STARTPOSITION`
+- [x] `count_only: true` skips the data query, returns just `{ total_count: N }`
+- [x] When `cursor` is set, the count query is skipped (we're already paginating)
+- [x] `tool-registry.defineTool({ name, schema, handler, isList? })` registers a tool with automatic try/catch → `QboError` → MCP error shape, logs entry/exit, applies pagination if `isList`
+- [x] Error tool results carry `isError: true`, a `text` content block with remediation, and `_meta.code`
+- [x] `list_invoices` accepts the documented filters via Zod schema and returns the standard `{ items, page_info }` shape
+- [x] One sandbox integration test: with the QBO sandbox company connected, `list_invoices({ limit: 5 })` returns 5 items + correct `page_info`
+- [x] Unit tests on `pagination`: cursor encode/decode, fetch_all hard cap, count_only short-circuit
 
 ## Blocked by
 

@@ -4,8 +4,12 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { AUTH_HELP_TEXT, parseAuthArgs } from "./auth-flow/cli.js";
 import { AuthFlowError, runAuthFlow } from "./auth-flow/index.js";
+import { getConfig } from "./config-store/index.js";
 import { getLogger, getLoggerPaths, readRecentLogs } from "./logger/index.js";
+import { QboClient } from "./qbo-client/index.js";
 import { SyncFolderDetectedError, getSafeBaseDir } from "./safe-paths/index.js";
+import { defineTool } from "./tool-registry/index.js";
+import { listInvoicesTool } from "./tools/list_invoices.js";
 
 async function runAuthCommand(args: string[]): Promise<void> {
   let parsed;
@@ -97,6 +101,28 @@ async function runMcpServer(): Promise<void> {
   const paths = getLoggerPaths();
   process.stderr.write(`qbo-mcp starting; logs at ${paths.logFile}\n`);
   logger.info({ event: "startup", log_file: paths.logFile }, "qbo-mcp starting");
+
+  // Wire QBO tools when authorized. Without tokens, the server still starts
+  // (so ping + get_recent_logs work) but QBO-touching tools are disabled —
+  // the user is told via stderr to run `npx qbo-mcp auth`.
+  const config = getConfig();
+  if (config.tokens && config.appCreds) {
+    const qbo = new QboClient({
+      appCreds: config.appCreds,
+      initialTokens: config.tokens,
+      logger,
+    });
+    defineTool(server, { qbo, logger }, listInvoicesTool);
+    logger.info(
+      { realm_id: config.tokens.realm_id, environment: config.tokens.environment, event: "qbo_tools_registered" },
+      "qbo tools registered",
+    );
+  } else {
+    process.stderr.write(
+      "qbo-mcp: not authorized — QBO tools disabled. Run `npx qbo-mcp auth --env=sandbox` first.\n",
+    );
+    logger.warn({ event: "qbo_tools_skipped" }, "qbo tools skipped — no tokens");
+  }
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
