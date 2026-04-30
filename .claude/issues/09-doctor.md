@@ -12,16 +12,16 @@ Startup self-check runs in this order on every server boot: config readable → 
 
 ## Acceptance criteria
 
-- [ ] `doctor.runDoctor()` returns the documented `DoctorReport` shape with all fields populated
-- [ ] `auth.status` is one of `ok | expired | missing`; `expires_in_seconds` is null when not `ok`
-- [ ] `last_api_call` and `last_error` are sourced from the log file via `logger.readRecentLogs`
-- [ ] `doctor` MCP tool returns the report as JSON in a single `text` content block
-- [ ] `npx qbo-mcp doctor` CLI prints the same report human-readable (table or pretty JSON), exit code 0 if all green, 1 if any check fails
-- [ ] Startup self-check sequence runs before the server begins listening on stdio
-- [ ] Missing config exits with code 1 and a stderr message naming the exact command to run (`npx qbo-mcp auth --env <env>`)
-- [ ] Expired refresh token exits with code 1 and the same remediation
-- [ ] QBO reachability failure logs a warning but does NOT exit (server still starts so Claude can see the error via tools)
-- [ ] Each MCP tool failure is independent — a broken tool doesn't kill the server process
+- [x] `doctor.runDoctor()` returns the documented `DoctorReport` shape with all fields populated
+- [x] `auth.status` is one of `ok | expired | missing`; `expires_in_seconds` is null when not `ok`
+- [x] `last_api_call` and `last_error` are sourced from the log file via `logger.readRecentLogs`
+- [x] `doctor` MCP tool returns the report as JSON in a single `text` content block
+- [x] `npx qbo-mcp doctor` CLI prints the same report human-readable (table or pretty JSON), exit code 0 if all green, 1 if any check fails
+- [x] Startup self-check sequence runs before the server begins listening on stdio
+- [x] Missing config exits with code 1 and a stderr message naming the exact command to run (`npx qbo-mcp auth --env <env>`)
+- [x] Expired refresh token exits with code 1 and the same remediation
+- [x] QBO reachability failure logs a warning but does NOT exit (server still starts so Claude can see the error via tools)
+- [x] Each MCP tool failure is independent — a broken tool doesn't kill the server process
 
 ## Blocked by
 

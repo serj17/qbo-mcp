@@ -5,6 +5,7 @@ import { z } from "zod";
 import { AUTH_HELP_TEXT, parseAuthArgs } from "./auth-flow/cli.js";
 import { AuthFlowError, runAuthFlow } from "./auth-flow/index.js";
 import { getConfig } from "./config-store/index.js";
+import { formatReportForCli, runDoctor, startupSelfCheck } from "./doctor/index.js";
 import { getLogger, getLoggerPaths, readRecentLogs } from "./logger/index.js";
 import { QboClient } from "./qbo-client/index.js";
 import { SyncFolderDetectedError, getSafeBaseDir } from "./safe-paths/index.js";
@@ -66,6 +67,25 @@ async function runAuthCommand(args: string[]): Promise<void> {
   }
 }
 
+async function runDoctorCommand(): Promise<void> {
+  try {
+    getSafeBaseDir();
+  } catch (err) {
+    if (err instanceof SyncFolderDetectedError) {
+      process.stderr.write(`qbo-mcp: ${err.message}\n`);
+      process.exit(1);
+    }
+    throw err;
+  }
+
+  const logger = getLogger();
+  const report = await runDoctor({ logger });
+  process.stdout.write(formatReportForCli(report));
+
+  const allPassed = report.checks.every((c) => c.passed);
+  process.exit(allPassed ? 0 : 1);
+}
+
 async function runMcpServer(): Promise<void> {
   try {
     getSafeBaseDir();
@@ -77,6 +97,52 @@ async function runMcpServer(): Promise<void> {
     throw err;
   }
 
+  const logger = getLogger();
+  const paths = getLoggerPaths();
+  process.stderr.write(`qbo-mcp starting; logs at ${paths.logFile}\n`);
+  logger.info({ event: "startup", log_file: paths.logFile }, "qbo-mcp starting");
+
+  // --- Startup self-check ---
+  const config = getConfig();
+  if (!config.tokens || !config.appCreds) {
+    const env = config.tokens?.environment ?? "sandbox";
+    process.stderr.write(
+      `qbo-mcp: not authorized — no tokens found. Run \`npx qbo-mcp auth --env=${env}\` to authorize.\n`,
+    );
+    logger.error({ event: "startup_check_failed", reason: "missing_tokens" }, "startup check failed: no tokens");
+    process.exit(1);
+  }
+
+  const now = Date.now();
+  if (now >= config.tokens.refresh_token_expires_at) {
+    process.stderr.write(
+      `qbo-mcp: refresh token has expired. Run \`npx qbo-mcp auth --env=${config.tokens.environment}\` to re-authorize.\n`,
+    );
+    logger.error({ event: "startup_check_failed", reason: "refresh_token_expired" }, "startup check failed: refresh token expired");
+    process.exit(1);
+  }
+
+  const qbo = new QboClient({
+    appCreds: config.appCreds,
+    initialTokens: config.tokens,
+    logger,
+  });
+
+  // QBO reachability — warn but don't exit
+  const companyResult = await qbo.getCompanyInfo();
+  if (!companyResult.ok) {
+    process.stderr.write(
+      `qbo-mcp: warning — QBO unreachable (${companyResult.error.code}). Server starting anyway; tools may fail.\n`,
+    );
+    logger.warn(
+      { event: "startup_qbo_unreachable", code: companyResult.error.code, msg: companyResult.error.message },
+      "startup: QBO unreachable, continuing",
+    );
+  } else {
+    logger.info({ event: "startup_qbo_ok" }, "startup: QBO reachable");
+  }
+
+  // --- Build server ---
   const server = new McpServer({ name: "qbo-mcp", version: "0.1.0" });
 
   server.tool("ping", "Returns pong — used to verify the MCP server is reachable.", {}, async () => {
@@ -97,32 +163,22 @@ async function runMcpServer(): Promise<void> {
     },
   );
 
-  const logger = getLogger();
-  const paths = getLoggerPaths();
-  process.stderr.write(`qbo-mcp starting; logs at ${paths.logFile}\n`);
-  logger.info({ event: "startup", log_file: paths.logFile }, "qbo-mcp starting");
+  server.tool(
+    "doctor",
+    "Returns a structured health report: auth status, token expiry, QBO reachability, last API call, last error, config and log paths, version. Use this to diagnose problems without asking the user to inspect anything.",
+    {},
+    async () => {
+      const report = await runDoctor({ logger, qboClient: qbo });
+      return { content: [{ type: "text", text: JSON.stringify(report, null, 2) }] };
+    },
+  );
 
-  // Wire QBO tools when authorized. Without tokens, the server still starts
-  // (so ping + get_recent_logs work) but QBO-touching tools are disabled —
-  // the user is told via stderr to run `npx qbo-mcp auth`.
-  const config = getConfig();
-  if (config.tokens && config.appCreds) {
-    const qbo = new QboClient({
-      appCreds: config.appCreds,
-      initialTokens: config.tokens,
-      logger,
-    });
-    defineTool(server, { qbo, logger }, listInvoicesTool);
-    logger.info(
-      { realm_id: config.tokens.realm_id, environment: config.tokens.environment, event: "qbo_tools_registered" },
-      "qbo tools registered",
-    );
-  } else {
-    process.stderr.write(
-      "qbo-mcp: not authorized — QBO tools disabled. Run `npx qbo-mcp auth --env=sandbox` first.\n",
-    );
-    logger.warn({ event: "qbo_tools_skipped" }, "qbo tools skipped — no tokens");
-  }
+  // Wire QBO tools
+  defineTool(server, { qbo, logger }, listInvoicesTool);
+  logger.info(
+    { realm_id: config.tokens.realm_id, environment: config.tokens.environment, event: "qbo_tools_registered" },
+    "qbo tools registered",
+  );
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
@@ -133,6 +189,7 @@ const TOP_LEVEL_HELP =
   "Commands:\n" +
   "  (no command)  Run the MCP server on stdio (default; what Claude Code launches)\n" +
   "  auth          Authorize against QuickBooks Online (run before first server use)\n" +
+  "  doctor        Run health checks and print a diagnostic report\n" +
   "\n" +
   "Run `qbo-mcp auth --help` for auth-specific options.\n";
 
@@ -147,6 +204,11 @@ async function main(): Promise<void> {
 
   if (cmd === "auth") {
     await runAuthCommand(argv.slice(1));
+    return;
+  }
+
+  if (cmd === "doctor") {
+    await runDoctorCommand();
     return;
   }
 
