@@ -111,6 +111,16 @@ export class QboClient {
     return this.invoke<T>("getCompanyInfo", { realmId }, {}, "GET", `/companyinfo/${realmId}`);
   }
 
+  /**
+   * Fetch a QBO report by name with the given query params. Used for reports
+   * like TransactionList that don't have a QBQL equivalent.
+   */
+  async report<T = unknown>(reportName: string, params: Record<string, string>): Promise<Result<T, QboError>> {
+    const qs = new URLSearchParams(params).toString();
+    const path = `/reports/${reportName}${qs ? `?${qs}` : ""}`;
+    return this.invoke<T>("report", { reportName }, {}, "GET", path);
+  }
+
   /** Snapshot of the active tokens — exposed for the doctor tool. */
   getTokens(): Tokens {
     return { ...this.currentTokens };

@@ -18,12 +18,12 @@ Filter shapes (per tool):
 
 ## Acceptance criteria
 
-- [ ] Each tool registered via `tool-registry.defineTool({ isList: true, ... })`
-- [ ] Each Zod schema documented with descriptions on every field (Claude reads these)
-- [ ] All five tools return the standard `{ items, page_info }` shape
-- [ ] All five tools support `count_only`, `cursor`, `fetch_all`, `limit`
-- [ ] One sandbox integration test per tool, asserting non-empty `items` from the canned sandbox data
-- [ ] No `node-quickbooks` quirks leak through: each tool's response items are plain JSON entities, not library wrapper objects
+- [x] Each tool registered via `tool-registry.defineTool({ isList: true, ... })`
+- [x] Each Zod schema documented with descriptions on every field (Claude reads these)
+- [x] All five tools return the standard `{ items, page_info }` shape
+- [x] All five tools support `count_only`, `cursor`, `fetch_all`, `limit`
+- [x] One sandbox integration test per tool, asserting non-empty `items` from the canned sandbox data
+- [x] No `node-quickbooks` quirks leak through: each tool's response items are plain JSON entities, not library wrapper objects
 
 ## Blocked by
 
