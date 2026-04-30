@@ -10,6 +10,10 @@ import { getLogger, getLoggerPaths, readRecentLogs } from "./logger/index.js";
 import { QboClient } from "./qbo-client/index.js";
 import { SyncFolderDetectedError, getSafeBaseDir } from "./safe-paths/index.js";
 import { defineTool } from "./tool-registry/index.js";
+import { getBillTool } from "./tools/get_bill.js";
+import { getCustomerTool } from "./tools/get_customer.js";
+import { getInvoiceTool } from "./tools/get_invoice.js";
+import { getVendorTool } from "./tools/get_vendor.js";
 import { listAccountsTool } from "./tools/list_accounts.js";
 import { listBillsTool } from "./tools/list_bills.js";
 import { listCustomersTool } from "./tools/list_customers.js";
@@ -185,6 +189,10 @@ async function runMcpServer(): Promise<void> {
   defineTool(server, { qbo, logger }, listBillsTool);
   defineTool(server, { qbo, logger }, listAccountsTool);
   defineTool(server, { qbo, logger }, listTransactionsTool);
+  defineTool(server, { qbo, logger }, getInvoiceTool);
+  defineTool(server, { qbo, logger }, getCustomerTool);
+  defineTool(server, { qbo, logger }, getVendorTool);
+  defineTool(server, { qbo, logger }, getBillTool);
   logger.info(
     { realm_id: config.tokens.realm_id, environment: config.tokens.environment, event: "qbo_tools_registered" },
     "qbo tools registered",

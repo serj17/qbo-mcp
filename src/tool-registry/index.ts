@@ -27,6 +27,7 @@ interface McpToolResultContent {
   text: string;
 }
 interface McpToolResult {
+  [key: string]: unknown;
   content: McpToolResultContent[];
   isError?: boolean;
   _meta?: Record<string, unknown>;

@@ -112,6 +112,16 @@ export class QboClient {
   }
 
   /**
+   * Read a single QBO entity by type and ID. Hits GET /{entity}/{id}. Returns
+   * the full JSON wrapper (e.g. `{ Invoice: { … } }`) — callers extract the
+   * entity key they need. Returns NOT_FOUND on 404 via the standard mapper.
+   */
+  async read<T = unknown>(entityType: string, id: string): Promise<Result<T, QboError>> {
+    const path = `/${entityType.toLowerCase()}/${encodeURIComponent(id)}`;
+    return this.invoke<T>("read", { entityType, id }, {}, "GET", path);
+  }
+
+  /**
    * Fetch a QBO report by name with the given query params. Used for reports
    * like TransactionList that don't have a QBQL equivalent.
    */

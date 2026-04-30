@@ -10,11 +10,11 @@ Each tool takes `{ id: string }` (the QBO entity ID) and returns the full QBO en
 
 ## Acceptance criteria
 
-- [ ] Each tool registered via `tool-registry.defineTool({ ... })` (not list mode)
-- [ ] Each Zod schema documents that `id` is the QBO entity ID, not a custom number like `DocNumber`
-- [ ] Each tool returns the raw QBO entity JSON (no wrapping)
-- [ ] Missing IDs return the standard `NOT_FOUND` MCP error result
-- [ ] One sandbox integration test per tool: fetch a known-good ID from sandbox data, assert the entity shape
+- [x] Each tool registered via `tool-registry.defineTool({ ... })` (not list mode)
+- [x] Each Zod schema documents that `id` is the QBO entity ID, not a custom number like `DocNumber`
+- [x] Each tool returns the raw QBO entity JSON (no wrapping)
+- [x] Missing IDs return the standard `NOT_FOUND` MCP error result
+- [x] One sandbox integration test per tool: fetch a known-good ID from sandbox data, assert the entity shape
 
 ## Blocked by
 
