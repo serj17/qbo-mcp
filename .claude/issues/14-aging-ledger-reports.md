@@ -16,11 +16,11 @@ Like the financial reports, return the QBO Report JSON unmodified.
 
 ## Acceptance criteria
 
-- [ ] Three tools registered via `tool-registry.defineTool({ ... })`
-- [ ] Zod schemas document accepted date formats and what `summarize_by` does on the GL
-- [ ] Aging tools default `as_of_date` to today (server local date) when omitted
-- [ ] Tools return the QBO Report JSON unmodified
-- [ ] One sandbox integration test per tool
+- [x] Three tools registered via `tool-registry.defineTool({ ... })`
+- [x] Zod schemas document accepted date formats and what `summarize_by` does on the GL
+- [x] Aging tools default `as_of_date` to today (server local date) when omitted
+- [x] Tools return the QBO Report JSON unmodified
+- [x] One sandbox integration test per tool
 
 ## Blocked by
 
