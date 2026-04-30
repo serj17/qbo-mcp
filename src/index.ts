@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { getLogger, getLoggerPaths, readRecentLogs } from "./logger/index.js";
+import { SyncFolderDetectedError, getSafeBaseDir } from "./safe-paths/index.js";
 
 const server = new McpServer({
   name: "qbo-mcp",
@@ -31,6 +32,16 @@ server.tool(
 );
 
 async function main() {
+  try {
+    getSafeBaseDir();
+  } catch (err) {
+    if (err instanceof SyncFolderDetectedError) {
+      process.stderr.write(`qbo-mcp: ${err.message}\n`);
+      process.exit(1);
+    }
+    throw err;
+  }
+
   const logger = getLogger();
   const paths = getLoggerPaths();
   process.stderr.write(`qbo-mcp starting; logs at ${paths.logFile}\n`);

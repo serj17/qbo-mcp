@@ -40,7 +40,8 @@ const PATHS_NAME = "qbo-mcp";
 const FILE_NAME = "qbo-mcp.log";
 
 export function getLoggerPaths(options: LoggerOptionsOverride = {}): LoggerPaths {
-  const logDir = options.logDir ?? envPaths(PATHS_NAME, { suffix: "" }).log;
+  const env = options.env ?? process.env;
+  const logDir = options.logDir ?? env.QBO_MCP_CONFIG_DIR ?? envPaths(PATHS_NAME, { suffix: "" }).log;
   return { logDir, logFile: join(logDir, FILE_NAME) };
 }
 

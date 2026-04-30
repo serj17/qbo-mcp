@@ -38,6 +38,12 @@ describe("config-store", () => {
       expect(paths.configDir).toBe(configDir);
       expect(paths.tokensPath).toBe(join(configDir, "tokens.json"));
     });
+
+    it("honors QBO_MCP_CONFIG_DIR env var when no explicit configDir is passed", () => {
+      const paths = getPaths({ env: { QBO_MCP_CONFIG_DIR: configDir } });
+      expect(paths.configDir).toBe(configDir);
+      expect(paths.tokensPath).toBe(join(configDir, "tokens.json"));
+    });
   });
 
   describe("getConfig with no file", () => {

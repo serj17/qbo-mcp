@@ -14,13 +14,13 @@ This check belongs either in `config-store` (alongside path resolution) or in th
 
 ## Acceptance criteria
 
-- [ ] Detects OneDrive on Windows by checking ancestor dir names and the `.OneDriveIgnore` / `desktop.ini` marker convention
-- [ ] Detects Dropbox by checking for a `.dropbox` marker in any ancestor dir
-- [ ] Detects iCloud by checking for paths under `~/Library/Mobile Documents/`
-- [ ] Detects Google Drive (Drive for Desktop) by checking for a `desktop.ini` with the `CLSID` Google Drive uses, or by ancestor-name match (`Google Drive`, `GoogleDrive`)
-- [ ] On detection, the server / CLI exits with code 1 and a stderr message naming the detected provider and the override env var
-- [ ] `QBO_MCP_CONFIG_DIR` env var, when set, replaces the `env-paths`-derived location and **bypasses** the sync-folder check (treated as "user opted in")
-- [ ] Unit tests cover each detector against fixture path trees, plus the override-bypass case
+- [x] Detects OneDrive on Windows by checking ancestor dir names and the `.OneDriveIgnore` / `desktop.ini` marker convention
+- [x] Detects Dropbox by checking for a `.dropbox` marker in any ancestor dir
+- [x] Detects iCloud by checking for paths under `~/Library/Mobile Documents/`
+- [x] Detects Google Drive (Drive for Desktop) by checking for a `desktop.ini` with the `CLSID` Google Drive uses, or by ancestor-name match (`Google Drive`, `GoogleDrive`)
+- [x] On detection, the server / CLI exits with code 1 and a stderr message naming the detected provider and the override env var
+- [x] `QBO_MCP_CONFIG_DIR` env var, when set, replaces the `env-paths`-derived location and **bypasses** the sync-folder check (treated as "user opted in")
+- [x] Unit tests cover each detector against fixture path trees, plus the override-bypass case
 
 ## Blocked by
 

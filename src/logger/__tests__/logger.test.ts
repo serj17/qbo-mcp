@@ -29,6 +29,12 @@ describe("logger", () => {
       expect(paths.logDir).toBe(logDir);
       expect(paths.logFile).toBe(join(logDir, "qbo-mcp.log"));
     });
+
+    it("honors QBO_MCP_CONFIG_DIR env var when no explicit logDir is passed", () => {
+      const paths = getLoggerPaths({ env: { QBO_MCP_CONFIG_DIR: logDir } });
+      expect(paths.logDir).toBe(logDir);
+      expect(paths.logFile).toBe(join(logDir, "qbo-mcp.log"));
+    });
   });
 
   describe("readRecentLogs with no log file", () => {

@@ -53,7 +53,9 @@ export interface ConfigStoreOptions {
 const PATHS_NAME = "qbo-mcp";
 
 export function getPaths(options: ConfigStoreOptions = {}): ConfigStorePaths {
-  const configDir = options.configDir ?? envPaths(PATHS_NAME, { suffix: "" }).config;
+  const env = options.env ?? process.env;
+  const configDir =
+    options.configDir ?? env.QBO_MCP_CONFIG_DIR ?? envPaths(PATHS_NAME, { suffix: "" }).config;
   return {
     configDir,
     tokensPath: join(configDir, "tokens.json"),
