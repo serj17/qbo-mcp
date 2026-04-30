@@ -35,6 +35,20 @@ export interface AuthFlowResult {
 const DEFAULT_PORT = 8080;
 const DEFAULT_CALLBACK_PATH = "/callback";
 
+/**
+ * Production redirect URI. Intuit requires HTTPS + publicly resolvable URLs
+ * for production OAuth apps and rejects http://localhost. This static page
+ * (hosted on GitHub Pages) receives the redirect, displays the URL for the
+ * user to copy, and the CLI's --manual flow extracts the code from the
+ * pasted URL. No secrets ever touch this static page; the OAuth code is
+ * short-lived and useless without the client_secret which stays local.
+ *
+ * Update both this constant AND the redirect URI registered in your
+ * Intuit Developer app's Production OAuth settings if you change the
+ * hosting location.
+ */
+const PRODUCTION_REDIRECT_URI = "https://serj17.github.io/qbo-mcp/callback.html";
+
 export class AuthFlowError extends Error {
   readonly code: string;
   constructor(code: string, message: string) {
@@ -138,7 +152,21 @@ function computeExpiries(
 export async function runAuthFlow(options: RunAuthFlowOptions): Promise<AuthFlowResult> {
   const port = options.port ?? DEFAULT_PORT;
   const callbackHost = options.callbackHost ?? "localhost";
-  const redirectUri = buildRedirectUri(callbackHost, port);
+  const isProd = options.environment === "production";
+
+  // Intuit forbids http://localhost in production redirect URIs. We use a
+  // static GitHub Pages page as the redirect target instead. Because that
+  // page is remote, the local HTTP listener can't receive the callback —
+  // we auto-flip to manual mode (user copies the redirected URL back into
+  // the terminal). Sandbox keeps the localhost listener flow.
+  const redirectUri = isProd ? PRODUCTION_REDIRECT_URI : buildRedirectUri(callbackHost, port);
+  const useManual = options.manual || isProd;
+  if (isProd && !options.manual) {
+    process.stderr.write(
+      "production environment uses an HTTPS callback URL; auto-switching to --manual mode.\n",
+    );
+  }
+
   const generateState = options.generateState ?? defaultGenerateState;
   const now = options.now ?? Date.now;
   const openBrowser = options.openBrowser ?? (async (url: string) => { await open(url); });
@@ -156,7 +184,7 @@ export async function runAuthFlow(options: RunAuthFlowOptions): Promise<AuthFlow
     state,
   });
 
-  const callbackUrl = options.manual
+  const callbackUrl = useManual
     ? await runManualFlow(authorizeUrl, options.readPastedUrl)
     : await runBrowserFlow({ authorizeUrl, port, callbackHost, openBrowser });
 

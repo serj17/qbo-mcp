@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>claude-mcp — OAuth callback</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: system-ui, -apple-system, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+    h2 { font-size: 1rem; margin-top: 2rem; }
+    .status { padding: 0.75rem 1rem; border-radius: 4px; font-weight: 600; }
+    .status-ok { background: #d4edda; color: #155724; }
+    .status-err { background: #f8d7da; color: #721c24; }
+    .status-wait { background: #fff3cd; color: #856404; }
+    .url-box { background: #f4f4f4; padding: 1rem; border-radius: 4px; word-break: break-all; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.85rem; user-select: all; }
+    button { padding: 0.6rem 1.2rem; background: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; margin-top: 1rem; }
+    button:hover { background: #0052a3; }
+    button:active { background: #003d7a; }
+    .field { display: flex; gap: 0.5rem; padding: 0.25rem 0; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+    .field-key { font-weight: 600; min-width: 130px; font-family: ui-monospace, Menlo, Consolas, monospace; }
+    .field-val { font-family: ui-monospace, Menlo, Consolas, monospace; word-break: break-all; }
+    p { margin: 0.5rem 0; }
+    .muted { color: #666; font-size: 0.85rem; }
+    @media (prefers-color-scheme: dark) {
+      body { background: #1a1a1a; color: #e0e0e0; }
+      .url-box { background: #2a2a2a; }
+      .field { border-bottom-color: #333; }
+      .muted { color: #aaa; }
+      .status-ok { background: #1e3a24; color: #b8e6c1; }
+      .status-err { background: #3a1e1e; color: #f5b7b8; }
+      .status-wait { background: #3a341e; color: #f5e1a0; }
+    }
+  </style>
+</head>
+<body>
+  <h1>claude-mcp — OAuth callback</h1>
+  <p class="muted">If you reached this page directly without going through an OAuth flow, you can close it.</p>
+
+  <div id="status" class="status status-wait" role="status">Waiting for OAuth parameters...</div>
+
+  <h2>Copy this URL and paste it into your terminal</h2>
+  <div class="url-box" id="url"></div>
+  <button id="copy" type="button">Copy URL to clipboard</button>
+  <p id="copy-status" class="muted" aria-live="polite"></p>
+
+  <h2>Captured callback parameters</h2>
+  <div id="fields"></div>
+
+  <h2 style="margin-top:2.5rem">What now?</h2>
+  <ol class="muted">
+    <li>Click <strong>Copy URL to clipboard</strong> above (or select the URL manually).</li>
+    <li>Switch back to your terminal where <code>npx claude-mcp auth --env=production --manual</code> is waiting.</li>
+    <li>Paste the URL and press Enter.</li>
+    <li>The CLI will exchange the code for tokens and save them to your local config dir. Done.</li>
+  </ol>
+
+  <p class="muted" style="margin-top:2rem">
+    No data on this page is sent to the maintainer. The OAuth code shown here is short-lived (~10 minutes) and useless on its own without your locally-stored client_secret. See the
+    <a href="privacy.html">Privacy Policy</a> for details.
+  </p>
+
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var url = window.location.href;
+      var statusEl = document.getElementById("status");
+      var urlEl = document.getElementById("url");
+      var fieldsEl = document.getElementById("fields");
+      var copyBtn = document.getElementById("copy");
+      var copyStatusEl = document.getElementById("copy-status");
+
+      urlEl.textContent = url;
+
+      var displayKeys = ["code", "state", "realmId", "error", "error_description"];
+      displayKeys.forEach(function (key) {
+        var val = params.get(key);
+        if (val === null) return;
+        var row = document.createElement("div");
+        row.className = "field";
+        var k = document.createElement("span");
+        k.className = "field-key";
+        k.textContent = key;
+        row.appendChild(k);
+        var v = document.createElement("span");
+        v.className = "field-val";
+        if (key === "code") {
+          v.textContent = "[code present — " + val.length + " characters]";
+        } else {
+          v.textContent = val;
+        }
+        row.appendChild(v);
+        fieldsEl.appendChild(row);
+      });
+
+      if (params.has("error")) {
+        statusEl.className = "status status-err";
+        statusEl.textContent = "OAuth error: " + params.get("error") +
+          (params.get("error_description") ? " — " + params.get("error_description") : "");
+      } else if (params.has("code") && params.has("state") && params.has("realmId")) {
+        statusEl.className = "status status-ok";
+        statusEl.textContent = "OAuth callback received. Copy the URL below and paste it into your terminal.";
+      } else if (params.has("code") || params.has("state") || params.has("realmId")) {
+        statusEl.className = "status status-err";
+        statusEl.textContent = "OAuth callback is incomplete. Expected code, state, and realmId — got a partial set. Try authorizing again.";
+      } else {
+        statusEl.className = "status status-wait";
+        statusEl.textContent = "No OAuth parameters in the URL. This page was opened directly.";
+        copyBtn.style.display = "none";
+      }
+
+      copyBtn.addEventListener("click", function () {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(
+            function () {
+              copyStatusEl.textContent = "Copied. Paste it into your terminal now.";
+            },
+            function () {
+              copyStatusEl.textContent = "Couldn't write to clipboard automatically — please select and copy the URL manually.";
+            }
+          );
+        } else {
+          copyStatusEl.textContent = "Clipboard API unavailable — please select and copy the URL manually.";
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
