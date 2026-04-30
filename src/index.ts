@@ -4,6 +4,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { AUTH_HELP_TEXT, parseAuthArgs } from "./auth-flow/cli.js";
 import { AuthFlowError, runAuthFlow } from "./auth-flow/index.js";
+import { REVOKE_HELP_TEXT, parseRevokeArgs, runRevoke } from "./auth-flow/revoke.js";
 import { getConfig } from "./config-store/index.js";
 import { formatReportForCli, runDoctor, startupSelfCheck } from "./doctor/index.js";
 import { getLogger, getLoggerPaths, readRecentLogs } from "./logger/index.js";
@@ -84,6 +85,62 @@ async function runAuthCommand(args: string[]): Promise<void> {
     }
     throw err;
   }
+}
+
+async function runRevokeCommand(args: string[]): Promise<void> {
+  let parsed;
+  try {
+    parsed = parseRevokeArgs(args);
+  } catch (err) {
+    process.stderr.write(`qbo-mcp: ${(err as Error).message}\n`);
+    process.exit(1);
+  }
+  if (parsed.helpRequested) {
+    process.stderr.write(REVOKE_HELP_TEXT);
+    process.exit(0);
+  }
+
+  try {
+    getSafeBaseDir();
+  } catch (err) {
+    if (err instanceof SyncFolderDetectedError) {
+      process.stderr.write(`qbo-mcp: ${err.message}\n`);
+      process.exit(1);
+    }
+    throw err;
+  }
+
+  const config = getConfig();
+  if (!config.tokens) {
+    process.stderr.write("qbo-mcp: no tokens to revoke (tokens.json is missing). Nothing to do.\n");
+    process.exit(0);
+  }
+  if (!config.appCreds) {
+    process.stderr.write(
+      "qbo-mcp: QBO_CLIENT_ID and QBO_CLIENT_SECRET must be set to revoke (Intuit's revoke endpoint requires HTTP Basic auth with the app credentials).\n",
+    );
+    process.exit(1);
+  }
+
+  const result = await runRevoke({
+    appCreds: config.appCreds,
+    tokens: config.tokens,
+    keepConfig: parsed.keepConfig,
+  });
+
+  if (!result.ok) {
+    process.stderr.write(`qbo-mcp [${result.code}]: ${result.message}\n`);
+    process.exit(1);
+  }
+
+  if (result.cleared) {
+    process.stderr.write("qbo-mcp: refresh token revoked at Intuit and tokens.json removed locally.\n");
+  } else {
+    process.stderr.write(
+      "qbo-mcp: refresh token revoked at Intuit. tokens.json kept on disk per --keep-config (it is now useless and can be deleted).\n",
+    );
+  }
+  process.exit(0);
 }
 
 async function runDoctorCommand(): Promise<void> {
@@ -233,6 +290,7 @@ const TOP_LEVEL_HELP =
   "Commands:\n" +
   "  (no command)  Run the MCP server on stdio (default; what Claude Code launches)\n" +
   "  auth          Authorize against QuickBooks Online (run before first server use)\n" +
+  "  revoke        Revoke the stored refresh token at Intuit and clear local config\n" +
   "  doctor        Run health checks and print a diagnostic report\n" +
   "\n" +
   "Run `qbo-mcp auth --help` for auth-specific options.\n";
@@ -248,6 +306,11 @@ async function main(): Promise<void> {
 
   if (cmd === "auth") {
     await runAuthCommand(argv.slice(1));
+    return;
+  }
+
+  if (cmd === "revoke") {
+    await runRevokeCommand(argv.slice(1));
     return;
   }
 

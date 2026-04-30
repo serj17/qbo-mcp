@@ -21,11 +21,11 @@ After a successful revoke, the next QBO API call would fail with `AUTH_REFRESH_F
 
 ## Acceptance criteria
 
-- [ ] `npx -y qbo-mcp revoke` POSTs to Intuit's revoke endpoint (`https://developer.api.intuit.com/v2/oauth2/tokens/revoke`) with the stored refresh token
-- [ ] On success, the local `tokens.json` is removed via `config-store.clearConfig()` (unless `--keep-config` is passed)
-- [ ] On failure (network error, already-revoked, etc.), the CLI prints the error to stderr and exits with code 1; the local file is not touched
-- [ ] A "no tokens to revoke" case (file missing) exits cleanly with a friendly message and code 0
-- [ ] Unit-tested where the logic is non-trivial (the HTTP call itself can be exercised manually); the path-clearing logic is already covered by `config-store` tests
+- [x] `npx -y qbo-mcp revoke` POSTs to Intuit's revoke endpoint (`https://developer.api.intuit.com/v2/oauth2/tokens/revoke`) with the stored refresh token
+- [x] On success, the local `tokens.json` is removed via `config-store.clearConfig()` (unless `--keep-config` is passed)
+- [x] On failure (network error, already-revoked, etc.), the CLI prints the error to stderr and exits with code 1; the local file is not touched
+- [x] A "no tokens to revoke" case (file missing) exits cleanly with a friendly message and code 0
+- [x] Unit-tested where the logic is non-trivial (the HTTP call itself can be exercised manually); the path-clearing logic is already covered by `config-store` tests
 
 ## Blocked by
 
