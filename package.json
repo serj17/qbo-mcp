@@ -33,6 +33,7 @@
     "dotenv": "^17.4.2",
     "env-paths": "^4.0.0",
     "intuit-oauth": "^4.2.3",
+    "node-quickbooks": "^2.0.50",
     "open": "^11.0.0",
     "pino": "^10.3.1",
     "pino-roll": "^4.0.0",
