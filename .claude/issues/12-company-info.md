@@ -10,11 +10,11 @@ This is the only QBO call we cache, and only because company-level metadata virt
 
 ## Acceptance criteria
 
-- [ ] `get_company_info` registered as an MCP tool with no input schema (or empty schema)
-- [ ] Returns `{ company_name, legal_name, country, fiscal_year_start_month, supported_languages?, default_currency?, ... }` from QBO's CompanyInfo
-- [ ] First call hits QBO; subsequent calls within the same server process return the cached result
-- [ ] Cache is process-local (in-memory only), invalidated on server restart
-- [ ] One sandbox integration test asserts the call returns a valid CompanyInfo shape
+- [x] `get_company_info` registered as an MCP tool with no input schema (or empty schema)
+- [x] Returns `{ company_name, legal_name, country, fiscal_year_start_month, supported_languages?, default_currency?, ... }` from QBO's CompanyInfo
+- [x] First call hits QBO; subsequent calls within the same server process return the cached result
+- [x] Cache is process-local (in-memory only), invalidated on server restart
+- [x] One sandbox integration test asserts the call returns a valid CompanyInfo shape
 
 ## Blocked by
 

@@ -11,6 +11,7 @@ import { QboClient } from "./qbo-client/index.js";
 import { SyncFolderDetectedError, getSafeBaseDir } from "./safe-paths/index.js";
 import { defineTool } from "./tool-registry/index.js";
 import { getBillTool } from "./tools/get_bill.js";
+import { getCompanyInfoTool } from "./tools/get_company_info.js";
 import { getCustomerTool } from "./tools/get_customer.js";
 import { getInvoiceTool } from "./tools/get_invoice.js";
 import { getVendorTool } from "./tools/get_vendor.js";
@@ -189,6 +190,7 @@ async function runMcpServer(): Promise<void> {
   defineTool(server, { qbo, logger }, listBillsTool);
   defineTool(server, { qbo, logger }, listAccountsTool);
   defineTool(server, { qbo, logger }, listTransactionsTool);
+  defineTool(server, { qbo, logger }, getCompanyInfoTool);
   defineTool(server, { qbo, logger }, getInvoiceTool);
   defineTool(server, { qbo, logger }, getCustomerTool);
   defineTool(server, { qbo, logger }, getVendorTool);
