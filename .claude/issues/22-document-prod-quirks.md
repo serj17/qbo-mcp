@@ -62,12 +62,12 @@ fresh-device installs add a row. Seed it with this row:
 
 ## Acceptance criteria
 
-- [ ] `KNOWN-ISSUES.md` created at repo root
-- [ ] Section for the UTF-8 / Windows console mojibake issue, including the PowerShell-profile workaround
-- [ ] Section for the TPS/TVQ multi-line tax structure with a note for non-US locales generally
-- [ ] Section for the libuv shutdown assertion on `doctor` exit
-- [ ] "Tested on" table at the bottom seeded with the 2026-05-07 row above
-- [ ] No code changes — this is a documentation-only issue
+- [x] `KNOWN-ISSUES.md` created at repo root
+- [x] Section for the UTF-8 / Windows console mojibake issue, including the PowerShell-profile workaround
+- [x] Section for the TPS/TVQ multi-line tax structure with a note for non-US locales generally
+- [x] Section for the libuv shutdown assertion on `doctor` exit
+- [x] "Tested on" table at the bottom seeded with the 2026-05-07 row above
+- [x] No code changes — this is a documentation-only issue
 
 ## Blocked by
 

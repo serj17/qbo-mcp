@@ -13,7 +13,7 @@ Document any prod-only quirks discovered in `CHANGELOG.md` or a `KNOWN-ISSUES.md
 - [x] `npx qbo-mcp auth --env production` completes successfully against the real QBO company
 - [x] `npx qbo-mcp doctor` reports green against production
 - [x] Manually run, in a Claude Code conversation against production: at least one report (P&L), at least one list tool with filters, one detail fetcher, one attachment fetch, one anomaly-style query (e.g., "find any vendors with similar names")
-- [ ] Any prod-only edge cases or surprises documented in repo (e.g., custom fields with unusual types, very long strings that truncate in logs, attachments behind extra auth) — captured in #22, unchecked here until `KNOWN-ISSUES.md` lands
+- [x] Any prod-only edge cases or surprises documented in repo (e.g., custom fields with unusual types, very long strings that truncate in logs, attachments behind extra auth) — landed in `KNOWN-ISSUES.md` via #22
 - [x] Confirm read-only behavior: no QBO entities were created or modified during the smoke test
 
 ## Blocked by
