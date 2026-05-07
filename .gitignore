@@ -16,3 +16,6 @@ sandcastle/
 .sandcastle/.env
 .sandcastle/logs/
 .sandcastle/worktrees/
+
+# One-off probe / experiment scripts (not part of the package)
+scratch/
